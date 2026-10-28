@@ -1,3 +1,0 @@
-"Assigned users and groups to this access-path.","Користувачі та групи з наданим доступом до цього шляху."
-"Assigned users","Користувачі з доступом"
-"Assigned groups","Групи з доступом"

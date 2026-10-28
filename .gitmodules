@@ -1,0 +1,3 @@
+[submodule "iF.SVNAdmin"]
+	path = iF.SVNAdmin
+	url = https://github.com/talisych/iF.SVNAdmin.git

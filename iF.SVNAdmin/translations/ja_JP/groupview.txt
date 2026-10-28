@@ -1,3 +1,0 @@
-"On this page you can see all assigned users to this group.","このページではグループに属する全てのユーザーが表示されます。"
-"Users of group","所属しているユーザー"
-"Permissions of group","グループのパーミッション"

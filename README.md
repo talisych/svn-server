@@ -22,7 +22,11 @@ Subversion server in Docker: Apache + mod_dav_svn over http, with the iF.SVNAdmi
 ```
 docker pull ghcr.io/talisych/svn-server:<版本>      # 或 :latest
 ```
-或自行 build:`docker build -t ghcr.io/talisych/svn-server:local .`
+或自行 build(需含 submodule):
+```
+git clone --recurse-submodules https://github.com/talisych/svn-server.git
+cd svn-server && docker build -t ghcr.io/talisych/svn-server:local .
+```
 
 ```
 docker run -d --name svn-server --restart unless-stopped -p 80:80 \
@@ -71,7 +75,11 @@ docker logs svn-server 2>/dev/null | grep '^svn-op'
 - 額外防護:session cookie `SameSite=Strict; HttpOnly`;`/svnadmin` 加 `X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy`;`data/` 與 `cli.php` 禁止外部存取;隱藏 Apache / PHP 版本。
 - 只在內網使用時，帳號密碼即可。若對外開放，建議再限制 `/svnadmin`(`/svn` 由 Apache 驗證、不經 PHP,不受影響):iF.SVNAdmin 登入沒有失敗次數限制，且 PHP 登入前漏洞(如 PHP2Shell)不受密碼保護。可在 `svnadmin.conf` 加 `Require ip <網段>`,或在 `/svnadmin` 前加一層 Apache Basic Auth。
 
-更新 iF.SVNAdmin:以 fork 的 `git archive <commit>` 取代 `iF.SVNAdmin` 目錄，並更新上面的 commit。
+iF.SVNAdmin 以 git submodule 引用 fork(`iF.SVNAdmin/`),程式修改在 fork 進行。更新到 fork 的新 commit:
+```
+git -C iF.SVNAdmin fetch && git -C iF.SVNAdmin checkout <commit>
+git add iF.SVNAdmin && git commit -m "Update iF.SVNAdmin to <commit>"
+```
 
 ## 從舊版(elleFlorio/svn-docker、s6 / PHP 8.1)升級
 
