@@ -62,7 +62,7 @@ docker exec -t svn-server htpasswd -bm /etc/subversion/passwd <username> <passwo
 
 全部輸出到容器 stdout / stderr,用 `docker logs svn-server` 查看，並以 `--log-opt` 輪替。
 - `svn-op ...`:每個 SVN 操作一行(checkout、commit、update、log…),含來源 IP、使用者、repo
-- 其他 stdout:iF.SVNAdmin 的 Apache access log(`/svn` 底下的 WebDAV 原始請求不記錄)
+- 其他 stdout:Apache access log,含 iF.SVNAdmin 與**瀏覽器**瀏覽 / 下載 `/svn` 的請求(svn 客戶端的原始請求不記錄，改由 `svn-op` 一行一個操作)
 - stderr:Apache error log,含認證失敗
 
 ```
