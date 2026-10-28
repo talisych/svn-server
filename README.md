@@ -4,6 +4,8 @@ Subversion server in Docker: Apache + mod_dav_svn over http, with the iF.SVNAdmi
 
 以 Docker 執行的 Subversion 伺服器：透過 http(WebDAV)存取，附 iF.SVNAdmin 網頁管理介面。
 
+日常操作(帳號、建 repo、查 log、備份、升級、常見問題)見 **[維運手冊 docs/OPERATIONS.md](docs/OPERATIONS.md)**,含建議的 docker compose 設定(log 交給 journald)。
+
 本專案源自已封存的 [elleFlorio/svn-docker](https://github.com/elleFlorio/svn-docker)(MIT),之後大幅改寫：改用官方 Alpine + tini、PHP 8.4、移除 svnserve 與 s6-overlay、改用修補過 XSS/CSRF 的 iF.SVNAdmin。原作者的版權聲明保留在 [LICENSE](LICENSE)。
 
 ## 內容
