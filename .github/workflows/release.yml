@@ -1,0 +1,54 @@
+name: release
+
+# Push a tag like v1.0.0 to build, test and publish
+# ghcr.io/talisych/svn-server:1.0.0 (and :latest), then create a GitHub release.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: docker build -t svn-server:test .
+
+      - name: Smoke test
+        run: |
+          set -eux
+          docker run --rm --entrypoint php84 svn-server:test -v | grep -E '^PHP 8\.4\.'
+          docker run -d --name svn-smoke -p 8080:80 svn-server:test
+          for i in $(seq 1 20); do curl -s -o /dev/null http://localhost:8080/svnadmin/ && break; sleep 1; done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/svn/)" = 401
+          test "$(curl -s -o /dev/null -w '%{http_code}' -L http://localhost:8080/svnadmin/)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/svnadmin/data/config.tpl.ini)" = 403
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/svnadmin/cli.php)" = 403
+          curl -s -D - -o /dev/null http://localhost:8080/svnadmin/login.php | grep -i 'SameSite=Strict'
+          if docker logs svn-smoke 2>&1 | grep -iE 'php (fatal|warning|parse)'; then exit 1; fi
+          docker rm -f svn-smoke
+
+      - name: Push to GHCR
+        run: |
+          set -eux
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for tag in "$VERSION" latest; do
+            docker tag svn-server:test "$IMAGE:$tag"
+            docker push "$IMAGE:$tag"
+          done
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" --generate-notes --notes "Image: \`docker pull $IMAGE:$VERSION\`"

@@ -1,6 +1,10 @@
 # Alpine Linux running Apache in the foreground, with tini as PID 1
 FROM alpine:3.24
 
+LABEL org.opencontainers.image.source="https://github.com/talisych/svn-server" \
+      org.opencontainers.image.description="Subversion server: Apache + mod_dav_svn, iF.SVNAdmin web UI" \
+      org.opencontainers.image.licenses="MIT"
+
 	# Install Apache2 and other stuff needed to access svn via WebDav
 	# Install svn
 	# Installing utilities for SVNADMIN frontend

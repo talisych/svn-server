@@ -16,15 +16,22 @@ Subversion server in Docker: Apache + mod_dav_svn over http, with the iF.SVNAdmi
 | PHP | `php84`(含 CVE-2026-109618 / 109619 修補) |
 | svn:// | **不提供**(svnserve 預設允許匿名讀取，已移除) |
 
-## build 與執行
+## 取得 image 與執行
+
+直接用 release 版本(GitHub Actions 推 `v*` tag 時自動 build、測試、發布):
+```
+docker pull ghcr.io/talisych/svn-server:<版本>      # 或 :latest
+```
+或自行 build:`docker build -t ghcr.io/talisych/svn-server:local .`
 
 ```
-docker build -t svn-server .
 docker run -d --name svn-server --restart unless-stopped -p 80:80 \
   --log-opt max-size=50m --log-opt max-file=5 \
   -v <hostpath>:/home/svn -v svn_config:/etc/subversion -v svnadmin_config:/opt/svnadmin/data \
-  svn-server
+  ghcr.io/talisych/svn-server:<版本>
 ```
+
+發布新版:`git tag -a vX.Y.Z -m ... && git push origin vX.Y.Z`,流程見 `.github/workflows/release.yml`。
 
 | 路徑 | 內容 | 建議 |
 |---|---|---|
