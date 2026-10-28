@@ -62,7 +62,7 @@ docker logs svn-server 2>/dev/null | grep '^svn-op'
 
 - iF.SVNAdmin 來自 [talisych/iF.SVNAdmin](https://github.com/talisych/iF.SVNAdmin) 分支 `fix/xss-csrf`(commit `b222fe0`):upstream master 1.7.0(未正式發布)+ CSRF(CVE-2019-15128)與 XSS 修補。
 - 額外防護:session cookie `SameSite=Strict; HttpOnly`;`/svnadmin` 加 `X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy`;`data/` 與 `cli.php` 禁止外部存取;隱藏 Apache / PHP 版本。
-- 建議另外限制 `/svnadmin` 只允許內網或管理員 IP。
+- 只在內網使用時，帳號密碼即可。若對外開放，建議再限制 `/svnadmin`(`/svn` 由 Apache 驗證、不經 PHP,不受影響):iF.SVNAdmin 登入沒有失敗次數限制，且 PHP 登入前漏洞(如 PHP2Shell)不受密碼保護。可在 `svnadmin.conf` 加 `Require ip <網段>`,或在 `/svnadmin` 前加一層 Apache Basic Auth。
 
 更新 iF.SVNAdmin:以 fork 的 `git archive <commit>` 取代 `iF.SVNAdmin` 目錄，並更新上面的 commit。
 
